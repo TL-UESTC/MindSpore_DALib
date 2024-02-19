@@ -55,10 +55,10 @@ class ImageClassifier(ClassifierBase):
             if isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.BatchNorm1d):
                 m.set_train(False)
 
-    def get_parameters(self, base_lr=1.0, optimize_head=True) -> List[Dict]:
+    def get_parameters_own(self, base_lr=1.0, optimize_head=True) -> List[Dict]:
         params = [
-            {"params": self.backbone.parameters(), "lr": 0.1 * base_lr if self.finetune else 1.0 * base_lr},
-            {"params": self.bottleneck.parameters(), "lr": 1.0 * base_lr}
+            {"params": self.get_parameters(self.backbone), "lr": 0.1 * base_lr if self.finetune else base_lr},
+            {"params": self.get_parameters(self.bottleneck), "lr": base_lr},
         ]
         if optimize_head:
             params.append({"params": self.head.parameters(), "lr": 1.0 * base_lr})
