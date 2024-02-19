@@ -38,21 +38,22 @@ class GradientReverseFunction(nn.Cell):
         super(GradientReverseFunction,self).__init__()
 
     @mindspore.jit
-    def construct(self, ctx: Any, input: mindspore.Tensor, coeff: Optional[float] = 1.) -> mindspore.Tensor:
-        ctx.coeff = coeff
-        output = input * 1.0
+    def construct(self, input: mindspore.Tensor, coeff: Optional[float] = 1.) -> mindspore.Tensor:
+        one = mindspore.Tensor(np.array([1.0]), mindspore.float32)
+        output = input * one
         return output
     
     @mindspore.jit
-    def bprob(self,ctx: Any,grad_output: mindspore.Tensor) -> Tuple[mindspore.Tensor, Any]:
-        return ops.Cast()(grad_output.neg() * ctx.coeff, mindspore.dtype.float32), None
+    def bprop(self, input, coeff, out, dout) -> Tuple[mindspore.Tensor, Any]:
+        # return ops.Cast()(grad_output.neg() * ctx.coeff, mindspore.dtype.float32), None
+        return ops.Cast()(dout.neg() * coeff, mindspore.float32), None
     
 class GradientReverseLayer(nn.Cell):
     def __ini__(self):
         super(GradientReverseLayer,self).__init__()
 
-    def constrcut(self, *input):
-        return GradientReverseFunction.apply(*input)
+    def construct(self, *input):
+        return GradientReverseFunction()(*input)
 
 class WarmStartGradientReverseLayer(nn.Cell):
     """Gradient Reverse Layer :math:`\mathcal{R}(x)` with warm start
@@ -90,15 +91,12 @@ class WarmStartGradientReverseLayer(nn.Cell):
         self.max_iters = max_iters
         self.auto_step = auto_step
 
-    def construct(self, input: mindspore.Tensor) -> mindspore.Tensor:
+    def construct(self,input: mindspore.Tensor) -> mindspore.Tensor:
         """"""
-        coeff = np.float(
-            2.0 * (self.hi - self.lo) / (1.0 + np.exp(-self.alpha * self.iter_num / self.max_iters))
-            - (self.hi - self.lo) + self.lo
-        )
+        coeff = np.float32(2.0 * (self.hi - self.lo) / (1.0 + np.exp(-self.alpha * self.iter_num / self.max_iters)) - (self.hi - self.lo) + self.lo)
         if self.auto_step:
             self.step()
-        return GradientReverseFunction.apply(input, coeff)
+        return GradientReverseFunction()(input, coeff)
 
     def step(self):
         """Increase iteration number :math:`i` by 1"""
