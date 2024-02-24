@@ -132,7 +132,7 @@ class ImageClassifier(ClassfierBase):
                 m.weight.set_data(ops.normal(m.weight.shape, 0, 0.01))
                 m.bias.set_data(ops.normal(m.bias.shape, 0, 0.01))
 
-    def get_parameters(self, base_lr=1.0) -> List[Dict]:
+    def get_parameters_own(self, base_lr=1.0) -> List[Dict]:
         params = [
             {"params": self.get_parameters(self.backbone)},
             {"params": self.get_parameters(self.bottleneck), "momentum": 0.9},
