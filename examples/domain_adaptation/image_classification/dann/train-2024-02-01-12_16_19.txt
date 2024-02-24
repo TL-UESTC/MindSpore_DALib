@@ -1,0 +1,21 @@
+Namespace(root='C:/Users/ASUS/Desktop/tllib_mindspore/datasets/office31', data='Office31', source=['A'], target=['W'], train_resizing='default', val_resizing='default', resize_size=224, scale=[0.08, 1.0], ratio=[0.75, 1.3333333333333333], no_hflip=False, norm_mean=(0.485, 0.456, 0.406), norm_std=(0.229, 0.224, 0.225), arch='resnet50', bottleneck_dim=256, no_pool=False, scratch=False, trade_off=1.0, batch_size=32, lr=0.01, lr_gamma=0.001, lr_decay=0.75, momentum=0.9, weight_decay=0.001, workers=2, epochs=20, iters_per_epoch=1000, print_freq=100, seed=None, per_class_eval=False, log='dann', phase='train')
+train_transform:  Compose(
+    Compose(
+    ResizeImage(size=(256, 256))
+    RandomResizedCrop(size=(224, 224), scale=(0.08, 1.0), ratio=(0.75, 1.3333), interpolation=bilinear, antialias=True)
+)
+    RandomHorizontalFlip(p=0.5)
+    ToTensor()
+    Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+)
+val_transform:  Compose(
+    Compose(
+    ResizeImage(size=(256, 256))
+    CenterCrop(size=(224, 224))
+)
+    ToTensor()
+    Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+)
+=> using model 'resnet50'
+lr: 0.001
+Epoch: [0][   0/1000]	Time  4.08 ( 4.08)	Data  0.02 ( 0.02)	Loss   4.24 (  4.24)	Cls Acc 0.0 (0.0)	Domain Acc 51.6 (51.6)

@@ -44,7 +44,7 @@ class GradientReverseFunction(nn.Cell):
         return output
     
     @mindspore.jit
-    def bprob(self,ctx: Any,grad_output: mindspore.Tensor) -> Tuple[mindspore.Tensor, Any]:
+    def bprop(self,ctx: Any,grad_output: mindspore.Tensor) -> Tuple[mindspore.Tensor, Any]:
         return ops.Cast()(grad_output.neg() * ctx.coeff, mindspore.dtype.float32), None
     
 class GradientReverseLayer(nn.Cell):
